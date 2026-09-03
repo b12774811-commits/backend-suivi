@@ -143,18 +143,22 @@ app.get('/api/children/:childId/positions/latest', (req, res) => {
 });
 
 app.get('/api/children/:childId/positions/history', (req, res) => {
-  // ...
-});
+  const { childId } = req.params;
 
-app.get('/', (req, res) => {
-  res.json({
-    status: 'ok',
-    message: 'Backend Où est mon enfant fonctionne.'
-  });
-});
+  const child = db.prepare('SELECT 1 FROM children WHERE id = ?').get(childId);
+  if (!child) {
+    return res.status(404).json({ error: 'Appareil non reconnu.' });
+  }
 
-const PORT = process.env.PORT || 3000;
+  const limit = parseInt(req.query.limit, 10) || 100;
 
-app.listen(PORT, () => {
-  console.log(Serveur backend-suivi démarré sur le port ${PORT});
+  const positions = db
+    .prepare(
+      `SELECT latitude, longitude, accuracy, recorded_at
+       FROM positions WHERE child_id = ?
+       ORDER BY recorded_at DESC LIMIT ?`
+    )
+    .all(childId, limit);
+
+  res.json(positions);
 });
