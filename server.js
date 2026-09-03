@@ -1,3 +1,14 @@
+const express = require('express');
+const cors = require('cors');
+const crypto = require('crypto');
+const path = require('path');
+const Database = require('better-sqlite3');
+const { customAlphabet } = require('nanoid');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
 let db;
 try {
   db = new Database(path.join(__dirname, 'data.db'));
@@ -7,7 +18,6 @@ try {
   console.error('Erreur initialisation base de données:', err);
   process.exit(1);
 }
-db.pragma('journal_mode = WAL');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS children (
