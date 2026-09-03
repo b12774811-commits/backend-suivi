@@ -143,25 +143,18 @@ app.get('/api/children/:childId/positions/latest', (req, res) => {
 });
 
 app.get('/api/children/:childId/positions/history', (req, res) => {
-  const { childId } = req.params;
-  const sinceParam = req.query.since;
-  const since = sinceParam
-    ? new Date(sinceParam)
-    : new Date(Date.now() - 24 * 60 * 60 * 1000);
+  // ...
+});
 
-  const positions = db
-    .prepare(
-      `SELECT latitude, longitude, accuracy, recorded_at
-       FROM positions
-       WHERE child_id = ? AND recorded_at >= ?
-       ORDER BY recorded_at ASC`
-    )
-    .all(childId, since.toISOString());
-
-  res.json(positions);
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'Backend Où est mon enfant fonctionne.'
+  });
 });
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-  console.log(`Serveur backend-suivi démarré sur le port ${PORT}`);
+  console.log(Serveur backend-suivi démarré sur le port ${PORT});
 });
